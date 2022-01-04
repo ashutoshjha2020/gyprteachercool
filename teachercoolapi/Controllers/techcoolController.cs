@@ -14,5 +14,11 @@ namespace teachercoolapi.Controllers
         {
             return Ok();
         }
+        [HttpPost]
+        [Route("api/addquestion")]
+        public dynamic addquestion()
+        {
+            return Ok();
+        }
     }
 }
