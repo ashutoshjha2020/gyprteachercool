@@ -1,0 +1,176 @@
+﻿
+@{
+    ViewBag.Title = "Courses";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles
+    {
+    <!-- data tables css -->
+    <link rel="stylesheet" href="/assets/plugins/data-tables/css/datatables.min.css">
+    <!-- toolbar css -->
+    <link rel="stylesheet" href="/assets/plugins/toolbar/css/jquery.toolbar.css">
+
+    <style>
+        .btn-toolbar {
+            margin: 0 auto;
+        }
+    </style>
+}
+<section class="pcoded-main-container" ng-app="MyApp" ng-controller="MyController">
+    <div class="pcoded-wrapper">
+        <div class="pcoded-content">
+            <div class="pcoded-inner-content">
+                <div class="main-body">
+                    <div class="page-wrapper">
+                        <!-- [ breadcrumb ] start -->
+                        <div class="page-header">
+                            <div class="page-block">
+                                <div class="row align-items-center">
+                                    <div class="col-md-12">
+                                        <div class="page-header-title">
+                                            <h5 class="m-b-10">Course List</h5>
+                                        </div>
+                                        <ul class="breadcrumb">
+                                            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                            
+                                            <li class="breadcrumb-item"><a href="#!">Course</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- [ breadcrumb ] end -->
+                        <!-- [ Main Content ] start -->
+
+
+                        <div class="row">
+                            <!-- Zero config table start -->
+                            <div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="row">
+                                            <div class="col">
+                                                <h5>News Sub Category List</h5>
+                                            </div>
+                                            <div class="col text-right">
+                                                <a href="/course/addcourse" class="btn btn-primary">Add Course</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table id="dtcategory" class="table table-striped table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>S.No.</th>
+                                                        <th>Name</th>
+                                                        <th>Edition</th>
+                                                        <th>Details</th>                                                        
+                                                        <th>Action</th>
+
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+
+                                                    <tr ng-repeat="cat in category">
+                                                        <td>{{$index + 1}}</td>
+                                                        <td>{{cat.name}}</td>
+                                                        <td>{{cat.edition}}</td>                                                      
+                                                        <td>
+                                                            {{cat.details}}
+                                                        </td>
+                                                        
+                                                        <td>
+                                                            <a href="~/editcourse?id={{cat.guid}}" title="Edit">
+                                                                <i class="icon feather icon-edit f-16  text-c-green"></i>
+                                                            </a>                                                           
+                                                            <button ng-click="delete(cat.id)" class="btn btn-outline-danger" title="Delete">
+                                                                <i class="feather icon-trash-2 f-16 text-c-red"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Zero config table end -->
+                        </div>
+                        <!-- [ Main Content ] end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section Scripts
+    {
+
+    <!-- datatable Js -->
+    <script src="/assets/plugins/data-tables/js/datatables.min.js"></script>
+    <script type="text/javascript">
+
+             var mykey = '@System.Configuration.ConfigurationManager.AppSettings["apiurl"]';
+        var apiurl = mykey + "getcourse";
+
+            var app = angular.module('MyApp',[]);
+
+            app.controller('MyController', function ($scope, $http, $window) {
+
+                $scope.processing = true;
+                var post = $http({
+                    method: "GET",
+                    url: apiurl,
+                    dataType: 'json',
+                    data: {},
+
+                });
+                post.success(function (data, status) {
+
+                    $scope.category = data;
+                    $scope.processing = false;
+                    angular.element(document).ready(function () {
+                        dTable = $('#dtcategory')
+                        dTable.DataTable();
+                    });
+                   // $cookieStore.put('airports', data, { 'expires': expiresValue });
+                });
+                post.error(function (data, status) {
+                    $window.alert(data.Message);
+                });
+                //delete record to database.
+                $scope.delete = function (obj) {
+
+                    alert(obj);
+                    var post = $http({
+                        method: "POST",
+                        crossdomain: true,
+                        url: mykey + "deletecourse/"+obj,
+                        data: $scope.model
+                    });
+                    post.success(function (data, status) {
+
+                        if (data == '\"success\"' || data == 'success') {
+                            toastr.success("Course deleted successfully.");
+
+                        }
+                        else if (data == '\"error\"' || data == 'error') {
+                            toastr.warning("This course is not exists!");
+                        }
+                        else {
+                            toastr.error("Some error occured! Please try later or contact to support center!");
+                        }
+                        // Setting EditMode to FALSE hides the TextBoxes for the row.
+                        // customer.EditMode = false;
+                    });
+                };
+            });
+
+    </script>
+}
+

@@ -10,6 +10,7 @@ namespace teachercoolapi.Models
     {
         [Key]
         public int id { get; set; }
+        public int courseid { get; set; }
         public string question { get; set; }
         public string metakeywords { get; set; }
         public string metadescription { get; set; }

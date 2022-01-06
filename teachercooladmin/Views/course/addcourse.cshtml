@@ -1,0 +1,143 @@
+﻿
+@{
+    ViewBag.Title = "add course";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container" ng-app="MyApp" ng-controller="MyController">
+    <div class="pcoded-wrapper">
+        <div class="pcoded-content">
+            <div class="pcoded-inner-content">
+                <div class="main-body">
+                    <div class="page-wrapper">
+                        <!-- [ breadcrumb ] start -->
+                        <div class="page-header">
+                            <div class="page-block">
+                                <div class="row align-items-center">
+                                    <div class="col-md-12">
+                                        <div class="page-header-title">
+                                            <h5 class="m-b-10">Add Course</h5>
+                                        </div>
+                                        <ul class="breadcrumb">
+                                            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                            <li class="breadcrumb-item"><a href="/course">Course</a></li>
+                                            <li class="breadcrumb-item"><a href="#!">Add Course</a></li>
+                                           
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- [ breadcrumb ] end -->
+                        <!-- [ Main Content ] start -->
+                        <div class="row">
+                            <!-- [ form-element ] start -->
+                            <div class="col-sm-12">
+                                <!-- Basic Inputs -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Course Details</h5>
+                                    </div>
+                                    <form id="validation-form123" ng-submit="add($event)" name="frm1">
+                                        <div class="card-body">
+
+                                            <div class="row">
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Name<small><code>*</code></small></label>
+                                                        <input type="text" class="form-control" ng-model="name" name="name" id="name" placeholder="Name" required>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Edition</label>
+                                                        <input type="text" class="form-control" ng-model="edition" id="edition" placeholder="Edition">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Description</label>
+                                                        <input type="text" class="form-control" ng-model="details" id="details" placeholder="Description">
+                                                    </div>
+                                                </div>
+
+
+
+                                            </div>
+
+                                            </div>
+
+                                     
+                                        <div class="card-footer text-right">
+                                            <button type="submit" id="btn1" ng-model="btnsubmit" class="btn btn-primary mr-2">{{btnsubmit}}</button>
+                                            <button type="reset" class="btn btn-light">Reset</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+
+                            <!-- [ form-element ] end -->
+                        </div>
+                        <!-- [ Main Content ] end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+
+        var rootUrl = '@System.Configuration.ConfigurationManager.AppSettings["apiurl"]';
+
+        var app = angular.module('MyApp', [])
+
+        app.controller('MyController', function ($scope, $http, $window) {
+            $scope.model = {};
+
+            $scope.btnsubmit="Submit"
+
+                //add an new record to database.
+            $scope.add = function () {
+
+                debugger;
+                   
+                    $scope.model = {
+                        name: $scope.name,
+                        details: $scope.details,
+                        edition: $scope.edition
+                    };
+                    
+                    var post = $http({
+                        method: "POST",
+                        crossdomain: true,
+                        url: rootUrl + "addcourse",
+                        data: $scope.model
+                    });
+                    post.success(function (data, status) {
+
+                        if (data == '\"success\"' || data=='success') {
+                            toastr.success("Course added successfully.");
+
+                            $window.location.href = '/course'
+                            }
+                        else if (data == '\"already\"' || data == 'already') {
+                            toastr.warning("This course is already exists!");
+                        }
+                        else {
+                            toastr.error("Some error occured! Please try later or contact to support center!");
+                        }
+                       // Setting EditMode to FALSE hides the TextBoxes for the row.
+                       // customer.EditMode = false;
+                    });
+                };
+
+
+
+        });
+    </script>
+}

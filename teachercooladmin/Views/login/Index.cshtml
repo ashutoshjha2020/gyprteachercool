@@ -1,0 +1,123 @@
+﻿
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>Login - Teacher Cool Admin</title>
+    <!--[if lt IE 11]>
+     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+     <![endif]-->
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Favicon icon -->
+    <link rel="icon" href="/assets/images/favicon.svg" type="image/x-icon">
+    <!-- fontawesome icon -->
+    <link rel="stylesheet" href="/assets/fonts/fontawesome/css/fontawesome-all.min.css">
+    <!-- animation css -->
+    <link rel="stylesheet" href="/assets/plugins/animation/css/animate.min.css">
+
+    <!-- vendor css -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+
+
+</head>
+<body>
+    <!-- [ signin-img ] start -->
+    <div class="auth-wrapper aut-bg-img-side cotainer-fiuid align-items-stretch">
+        <div class="row align-items-center w-100 align-items-stretch bg-white">
+            <div class="d-none d-lg-flex col-md-8 aut-bg-img d-md-flex justify-content-center">
+
+            </div>
+            <div class="col-md-4 align-items-stret h-100 ad-flex justify-content-center">
+                <div class=" auth-content">
+                    <img src="/assets/images/logo.png" alt="" class="img-fluid mb-4">
+                    <h4 class="mb-3 f-w-400">Login into your account</h4>
+                    <h4 id="result"></h4>
+                    <div class="form-group mb-2">
+                        <label class="form-label">Enter User Name</label>
+                        <input type="email" id="uname" autocomplete="off" class="form-control" placeholder="username">
+                        <span id="spn_uerr" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Enter Password</label>
+                        <input type="password" id="pwd" class="form-control" placeholder="password">
+                        <span id="spn_perr" class="text-danger"></span>
+                    </div>
+
+                    <button class="btn btn-primary mb-4" onclick="login()">Login</button>
+                    <p class="mb-2 text-muted">
+                        Forgot password?
+                        <a href="/forgotpassword" class="f-w-400">Reset</a>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- [ signin-img ] end -->
+    <!-- Required Js -->
+    <script src="/assets/js/vendor-all.min.js"></script>
+    <script src="/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+    <script>
+        function login() {
+              var rootUrl = '@System.Configuration.ConfigurationManager.AppSettings["apiurl"]';
+            
+           var user = $('#uname').val();
+           var pass = $('#pwd').val();
+           if (user.length == 0 || user == '') {
+               $('#spn_uerr').html('Please enter user name!');
+               return;
+           }
+           else {
+               $('#spn_uerr').html('');
+           }
+           if (pass.length == 0 || pass== '') {
+               $('#spn_perr').html('Please enter your password!');
+               return;
+           }
+           else {
+               $('#spn_perr').html('');
+           }
+            $.ajax({
+                type: "POST",
+                datatype: "json",
+                url: rootUrl + "admin/login/"+user+"/"+pass,
+                data: {},
+                success: function (result) {
+                    
+                    if (result && result.responseid==1) // you should do your checking here
+                    {
+                        $('#result').empty().addClass('text-success')
+                        .append(result.msg);
+                        window.localStorage.setItem("userid", result.id);
+                        window.localStorage.setItem("usertype", result.categoryname);
+                        window.localStorage.setItem("userguid", result.guid);
+                        window.localStorage.setItem("name", result.name);                        
+                        window.localStorage.setItem("categoryid", result.categoryid);
+                        window.localStorage.setItem("email", result.email);
+                        window.localStorage.setItem("mobile", result.mobile);//Need to set on user click
+                        window.localStorage.setItem("profileimage", result.profileimg);
+
+                        window.location = '/home'; //just to show that it went through
+                    }
+                    else {
+                        $('#result').empty().addClass('text-danger')
+                            .append(result.msg);
+                    }
+                }
+            });
+            return false;
+        }
+    </script>
+</body>
+
+</html>
+
